@@ -14,3 +14,10 @@
 #intro{
     font-style: italic;
 }
+
+.footer{
+    padding: 1em;
+    display: block;
+    margin: auto;
+    text-align: center;
+}
