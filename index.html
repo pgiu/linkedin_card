@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="//platform.linkedin.com/in.js">
+        api_key: 78 j4ksyle3r4fq
+        lang: en_US
+    </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <script type="text/javascript">
+        console.log("Starting app");
+
+        function loginCallback() {
+            if (IN.User.isAuthorized()) {
+                console.log("User is authorized");
+                document.getElementById('signin_img').style.display = 'none';
+
+                // Get user info
+                getUserInfo();
+                getProfileData();
+
+            } else {
+                console.log("User is not authorized");
+                document.getElementById('status').style.display = 'block';
+            }
+        };
+
+        function loginCallbackScope() {
+            console.log("The user is already logged in");
+        };
+
+        function login() {
+            console.log("logging you in...");
+            IN.User.authorize(loginCallback, loginCallbackScope);
+            console.log("done");
+        };
+
+
+        function logOutCallback() {
+            document.getElementById('signin_img').style.display = 'block';
+            document.getElementById('profileData').style.display = 'none';
+        }
+
+        function logout() {
+            console.log("logging out");
+            IN.User.logout(logOutCallback, callbackScope);
+        }
+
+        function getUserInfoCallback(data) {
+            console.log("data is: " + JSON.stringify(data));
+            //document.getElementById('userInfo').innerHTML = JSON.stringify(data);
+        }
+
+        // Handle an error response from the API call
+        function onError(error) {
+            console.log(error);
+        }
+
+        function getUserInfo() {
+            console.log("Geting user info");
+            var url = "people/~?format=json";
+            IN.API.Raw(url).method('GET').body().result(getUserInfoCallback()).error(onError);
+            // This is to get the full resolution image for a user
+            // https://api.linkedin.com/v1/people/{user-id}/picture-urls::(original)
+        }
+
+
+        // Use the API call wrapper to request the member's profile data
+        function getProfileData() {
+            IN.API.Profile("me").fields("id", "first-name", "last-name", "headline", "location", "picture-urls::(original)", "public-profile-url", "email-address").result(displayProfileData).error(onError);
+        }
+
+        // Handle the successful return from the API call
+        function displayProfileData(data) {
+            console.log("profile data: ");
+            console.log(data);
+            var user = data.values[0];
+            document.getElementById("picture").innerHTML = '<img src="' + user.pictureUrls.values[0] + '" />';
+            document.getElementById("name").innerHTML = '<h2>' + user.firstName + ' ' + user.lastName + '<h2>';
+            document.getElementById("intro").innerHTML = user.headline;
+            document.getElementById("email").innerHTML = user.emailAddress;
+            document.getElementById("location").innerHTML = user.location.name;
+            document.getElementById("link").innerHTML = '<a href="' + user.publicProfileUrl + '" target="_blank">Visit profile</a>';
+            document.getElementById('profileData').style.display = 'block';
+        }
+    </script>
+
+    <div class="container">
+        <h1>Resu.me</h1>
+
+
+
+        <a href="" onclick="login();"><img id="signin_img" src="img/Retina/Sign-In-Small---Default.png"></a>
+
+        <!--<input type="button" value="Query user info" onclick="getUserInfo(); getProfileData();"> -->
+
+        <p id="userInfo"></p>
+
+        <!-- display profile info -->
+        <div id="profileData" style="display: none;">
+            <div class="row profileBox">
+                <div id="picture" class="col-sm-6">
+                    <img class="profileImg" src="img/Non-Retina/Sign-in-Large---Active.png" width="80%" height="80%">
+                </div>
+                <div class="info" class="col-sm-6">
+                    <p id="name"></p>
+                    <p id="intro"></p>
+                    <p id="email"></p>
+                    <p id="location"></p>
+                    <p id="link"></p>
+                </div>
+            </div>
+            <!--<p><a href="" onclick="logout()">Logout</a></p>-->
+        </div>
+
+
+        <div class="footer">
+            <p>This website doesn't collect any personal data. You can always remove this application from your LinkedIn settings page.</p>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap stuff -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</body>
+
+</html>
+ 
